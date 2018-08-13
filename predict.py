@@ -39,7 +39,7 @@ count = del_data.isnull().sum()
 imp_data = home_data.drop(['CouncilArea', 'Suburb', 'Address', 'Type', 'Method', 'SellerG', 'Date', 'Regionname'], axis=1)
 ccol = []
 for column in home_data.columns:
-    if  column != 'CouncilArea' and column != 'Suburb' and column != 'Address' and column != 'Type' and column != 'Method' and column != 'SellerG' and column != 'Date' and column != 'Regionname':
+    if  column not in ['CouncilArea', 'Suburb', 'Address', 'Type', 'Method', 'SellerG', 'Date', 'Regionname']:
         ccol.append(column)
 cleaner = Imputer()
 clean_data = pd.DataFrame(cleaner.fit_transform(imp_data))
