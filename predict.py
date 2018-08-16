@@ -30,8 +30,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Imputer
+from xgboost import XGBRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble.partial_dependence import partial_dependence, plot_partial_dependence
 
 home_data=pd.read_csv('melb_data.csv')
+# print(home_data.head())
 home_data.dropna(axis=0, subset=['Price'], inplace=True)
 del_data = home_data.drop(['CouncilArea'], axis=1)
 count = del_data.isnull().sum()
@@ -57,7 +61,15 @@ final_data = pd.concat([one_hot_encoded_data, clean_data], axis=1)
 y = final_data.Price
 X = final_data[features]
 Xtrain, Xtest, yTrain, yTest = train_test_split(X,y)
-model = RandomForestRegressor(random_state=1)
+# def compare_mae(est):
+    # model = RandomForestRegressor(n_estimators=est, random_state=1)
+#model = XGBRegressor(n_estimators=1000, learning_rate=0.05)
+#model.fit(Xtrain, yTrain, early_stopping_rounds=5, eval_set=[(Xtest, yTest)], verbose=False)
+model=GradientBoostingRegressor()
 model.fit(Xtrain, yTrain)
 predictions = model.predict(Xtest)
-print("The mean absolute error is: {}".format(mean_absolute_error(yTest, predictions)))
+plot = plot_partial_dependence(model, X=Xtest, features = features[0:2], feature_names=['Rooms', 'Bathroom', 'Bedroom2'], grid_resolution=10)
+# print("The mean absolute error for {1} estimates is: {0:,.2f}".format(mean_absolute_error(yTest, predictions), est))
+#print("The mean absolute error is: {:,}".format(mean_absolute_error(yTest, predictions)))
+# for i in [10, 100, 200, 300]:
+#     compare_mae(i)
